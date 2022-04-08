@@ -1,7 +1,7 @@
 # cdc-to-kafka-for-twitter-sentimentr-up
-DataStax CDC for Apache Cassandra® is open-source software (OSS) that sends Cassandra mutations for tables having Change Data Capture (CDC) enabled to Luna Streaming or Apache Pulsar™, which in turn can write the data to any technology like for example platforms such as Kafka.
+DataStax CDC for Apache Cassandra® is open-source software (OSS) that sends Cassandra mutations for tables having Change Data Capture (CDC) enabled to Luna Streaming or Apache Pulsar™, which in turn can write the data to any technology like for example platforms such as kafka.
 
-This repo contains a CDC demo that streams data to kafka when ingested into cassandra. 
+This repo contains a CDC demo. The twitter-sentimentr application ingests data into cassandra. CDC streams all mutations of table tweet_by_id in near realtime to kafka.
 
 - clone the repo
 ```
@@ -41,7 +41,8 @@ sh init-2.sh
 - done !!!
 - you should now see realtime date in twitter-ui: [localhost:8081](http://localhost:8081)
 - you should see cdc in action
-- see the terminal where you executed "sh init-2.sh". There you see all mutations of table tweet_by_id. These mutations are streamed as events/messages to topic:' public/default/data-twitter.tweet_by_id'. You can consume this topic by any pulsar sink to downstream the data in realtime to the downstream technologies of your choice for various use cases to leverage your data.
+- see the terminal where you executed "sh init-2.sh". There you see all mutations of table tweet_by_id. These mutations are streamed as events/messages to topic:' public/default/data-twitter.tweet_by_id'. The kafka connector consumes this topic and streams the data to the topic 'from-pulsar' in kafka.
+![alt text](/images/kafka-console-consumer.png)
 
 ## Monitoring
 - grafana and prometheus is preconfigured with some pulsar dashboards
