@@ -1,0 +1,21 @@
+className: io.flickd.twitter.pulsar.functions.TweetRouter
+tenant: public
+namespace: default
+name: tweet-router
+inputs:
+- persistent://public/default/from-twitterapi
+#output: persistent://public/default/filtered-feed
+#userConfig:
+#  keyword : Director
+#  ignore-case: false
+ 
+##################################
+# Processing 
+##################################
+autoAck: true
+#logTopic: persistent://public/default/keyword-filter-log
+processingGuarantees: ATLEAST_ONCE
+retainOrdering: false
+timeoutMs: 30000
+subName: tweet-router-sub
+cleanupSubscription: true

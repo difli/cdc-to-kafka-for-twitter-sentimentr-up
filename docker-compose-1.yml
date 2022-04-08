@@ -1,0 +1,93 @@
+version: '3.3'
+
+services:
+
+  # Cassandra 4 with the DataStax Change Agent enabled
+  cassandra:
+    image: cassandra:latest
+    container_name: cassandra
+    volumes:
+      # Enable cdc and change agent to be loaded by providing custpom configurations
+      - ./config/cassandra.yaml:/etc/cassandra/cassandra.yaml
+      - ./config/jvm-server.options:/etc/cassandra/jvm-server.options
+      - ./cassandra-source-agent:/etc/cassandra-source-agent
+    networks:
+      - backend
+
+  # Pulsar
+  pulsar:
+    image: apachepulsar/pulsar:latest
+    container_name: pulsar
+    volumes:
+      # Mount the folder for the DataStax Cassandra Source Connector
+      - ./twitter-router-function/twitter-router-0.0.1-SNAPSHOT.jar:/pulsar/connectors/twitter-router-0.0.1-SNAPSHOT.jar
+      - ./twitter-router-function/twitter-router-function.yaml:/etc/twitter-router-function/twitter-router-function.yaml
+      - ./cassandra-source-connector/pulsar-cassandra-source-1.0.1.nar:/pulsar/connectors/pulsar-cassandra-source-1.0.1.nar
+      - ./cassandra-sink-connector/cassandra-enhanced-pulsar-sink-1.5.0-nar.nar:/pulsar/connectors/cassandra-enhanced-pulsar-sink-1.5.0-nar.nar
+      - ./cassandra-sink-connector/tweet-db-sink.yml:/etc/cassandra-sink-connector/tweet-db-sink.yml
+      - ./kafka-connector/pulsar-io-kafka-2.9.1.nar:/pulsar/connectors/pulsar-io-kafka-2.9.1.nar
+      - ./kafka-connector/kafka-connector.yaml:/etc/kafka-connector.yaml
+    environment:
+      PULSAR_MEM: " -Xms512m -Xmx512m -XX:MaxDirectMemorySize=1g"
+    command: |
+      /bin/bash -c "bin/apply-config-from-env.py conf/standalone.conf && bin/pulsar standalone"
+    networks:
+      - backend
+
+  # prometheus and grafana
+  prometheus:
+    image: prom/prometheus:latest
+    container_name: prometheus
+    ports:
+      - 9090:9090
+    volumes:
+      - ./config/standalone.yml.template:/etc/prometheus/prometheus.yml
+    depends_on:
+      - pulsar
+    networks:
+      - backend
+
+  grafana:
+    image: grafana/grafana-oss
+    container_name: grafana
+    ports:
+      - 3000:3000
+    volumes:
+      - ./grafana/config.ini:/etc/grafana/config.ini
+      - ./grafana/provisioning:/etc/grafana/provisioning
+      - ./grafana/provisioning/dashboards:/etc/grafana/provisioning/dashboards
+    depends_on:
+      - prometheus
+    networks:
+      - backend
+
+  zookeeper:
+    image: confluentinc/cp-zookeeper:latest
+    container_name: zookeeper
+    environment:
+      ZOOKEEPER_CLIENT_PORT: 2181
+      ZOOKEEPER_TICK_TIME: 2000
+    ports:
+      - 22181:2181
+    networks:
+      - backend
+  
+  kafka:
+    image: confluentinc/cp-kafka:latest
+    container_name: kafka
+    depends_on:
+      - zookeeper
+    ports:
+      - 29092:29092
+    environment:
+      KAFKA_BROKER_ID: 1
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:9092,PLAINTEXT_HOST://localhost:29092
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT
+      KAFKA_INTER_BROKER_LISTENER_NAME: PLAINTEXT
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+    networks:
+      - backend
+
+networks:
+  backend:

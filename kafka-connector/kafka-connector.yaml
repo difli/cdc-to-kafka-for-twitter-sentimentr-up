@@ -1,0 +1,4 @@
+configs:
+    bootstrapServers: "kafka:9092"
+    topic: "from-pulsar"
+    acks: "1"

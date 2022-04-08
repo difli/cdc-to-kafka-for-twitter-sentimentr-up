@@ -1,0 +1,20 @@
+# set default if you want to run local. set astra if you want to run on astra
+# in case of spring_profiles_active=default no need to provide astra configs
+# default or astra
+spring_profiles_active=default
+
+# pulsar (local) configuration
+pulsar_service_url=pulsar://pulsar:6650
+pulsar_topic_from_twitterapi=persistent://public/default/from-twitterapi
+pulsar_topic_to_db=persistent://public/default/to-db
+pulsar_topic_to_en_sentimentr=persistent://public/default/to-en-sentimentr   
+
+# cassandra (local) configuration
+cassandra_contact_points=cassandra
+
+# twitter api credentials
+twitter_credentials_file_path=/credential-files/twitter-credentials.json
+
+# Twitter filtered stream rule
+# https://developer.twitter.com/en/docs/twitter-api/tweets/filtered-stream/integrate/build-a-rule
+twitter_filtered_stream_rule=bmw

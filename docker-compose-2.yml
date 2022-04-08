@@ -1,0 +1,47 @@
+version: '3.3'
+
+services:
+
+  # twitter-sentimentr
+  twitter-ui:
+    image: dieterfl/twitter-ui:latest
+    container_name: twitter-ui
+#    volumes:
+#      - ./config/cassandra.yaml:/etc/cassandra/cassandra.yaml
+#      - ./config/jvm-server.options:/etc/cassandra/jvm-server.options
+#      - ./cassandra-source-agent:/etc/cassandra-source-agent
+    ports:
+      - 8081:8081
+    env_file:
+      - ./config/env-file-docker
+    networks:
+      - backend
+
+  twitter-sentimentr-en-service:
+    image: dieterfl/twitter-sentimentr-en-service:latest
+    container_name: twitter-sentimentr-en-service
+    env_file:
+      - ./config/env-file-docker
+    networks:
+      - backend
+
+  twitter-loadgenerator:
+    image: dieterfl/twitter-loadgenerator:latest
+    container_name: twitter-loadgenerator
+    env_file:
+      - ./config/env-file-docker
+    networks:
+      - backend
+
+#  twitter-reader:
+#    image: dieterfl/twitter-reader:latest
+#    container_name: twitter-reader
+#    env_file:
+#      - ./config/env-file-docker
+#    volumes:
+#      - ./your-input-files/twitter-credentials.json:/credential-files/twitter-credentials.json
+#    networks:
+#      - backend
+
+networks:
+  backend:
