@@ -1,4 +1,8 @@
-# cdc-for-twitter-sentimentr-up
+# cdc-to-kafka-for-twitter-sentimentr-up
+DataStax CDC for Apache Cassandra® is open-source software (OSS) that sends Cassandra mutations for tables having Change Data Capture (CDC) enabled to Luna Streaming or Apache Pulsar™, which in turn can write the data to any technology like for example platforms such as Kafka.
+
+This repo contains a CDC demo that streams data to kafka when ingested into cassandra. 
+
 - clone the repo
 ```
 git clone https://github.com/difli/cdc-for-twitter-sentimentr-up.git
