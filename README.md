@@ -89,7 +89,7 @@ docker exec -it cassandra cqlsh -e "DELETE tweet FROM twitter.tweet_by_id WHERE 
 ```
 - the following screenshot shows two terminal windows.
 - the terminal at the bottom is where the cqlsh insert, update and delete commands where executed to cause mutations in the cassandra twitter.tweet_by_id table.
-- The terminal at the top is the one where 'sh init-2.sh' was executed and where 'kafka-console-consumer' prints all data streamed to kafka"s 'from-pulsar' topic. In case you stopped the output in this window - just execute the following command in any terminal you like.
+- The terminal at the top is the one where 'sh init-2.sh' was executed and where 'kafka-console-consumer' prints all data streamed to kafka"s 'from-pulsar' topic. In case you stopped 'kafka-console-consumer' - just start 'kafka-console-consumer' again.
 ```
 docker exec -it kafka /bin/kafka-console-consumer --topic from-pulsar --bootstrap-server localhost:9092
 ```
