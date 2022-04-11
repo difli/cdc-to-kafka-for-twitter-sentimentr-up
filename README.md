@@ -50,7 +50,7 @@ sh init-2.sh
 - login with admin/admin
 - enjoy the preconfigured pulsar dashboards
 
-## Demo path
+## Demo path with data ingests by the application
 - datapipeline: ```twitter.tweet_by_id``` cassandra table -> DataStax Change Agent for Apache Cassandra -> ```public/default/event-twitter.tweet_by_id``` pulsar topic -> DataStax Cassandra Source Connector for Apache Pulsar -> ```public/default/data-twitter.tweet_by_id``` pulsar topic -> kafka sink connector for pulsar -> ```from-pulsar``` kafka topic
 - query twitter.tweet_by_id table
 ```
@@ -70,7 +70,8 @@ docker exec -it kafka /bin/kafka-console-consumer --topic from-pulsar --bootstra
 ```
 - There you see all mutations of table tweet_by_id. These mutations are streamed as events/messages to topic:' public/default/data-twitter.tweet_by_id'. The kafka connector consumes this topic and streams the data to the topic 'from-pulsar' in kafka which is consumed by the kafka-console-consumer cli.
 ![alt text](/images/kafka-console-consumer.png)
-- stop the applications
+## Demo path with data ingestes via cqlsh  
+- stop the applications in order to show the effect of inserts, updates and deletes via cqlsh
 ```
 docker-compose -f docker-compose-2.yml down
 ```
@@ -90,5 +91,5 @@ docker exec -it cassandra cqlsh -e "DELETE tweet FROM twitter.tweet_by_id WHERE 
 ```
 docker exec -it kafka /bin/kafka-console-consumer --topic from-pulsar --bootstrap-server localhost:9092
 ```
- The terminal at the bottom is where the cqlsh insert, update and delete commands where executed to cause mutations in the cassandra twitter.tweet_by_id table. after each command the kafka-console-consumer in the top window prints the mutation streamed to kafka"s 'from-pulsar" topic in near realtime. 
+ - The terminal at the bottom is where the cqlsh insert, update and delete commands where executed to cause mutations in the cassandra twitter.tweet_by_id table. after each command the kafka-console-consumer in the top window prints the mutation streamed to kafka"s 'from-pulsar" topic in near realtime.
 ![alt text](/images/manual-cqlsh.png)
