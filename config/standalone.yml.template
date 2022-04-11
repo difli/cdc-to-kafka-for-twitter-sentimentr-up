@@ -51,6 +51,10 @@ scrape_configs:
     - targets:
       - 'pulsar:8080'
 
+  - job_name: 'kafka'
+    static_configs:
+    - targets: ['jmx-kafka:5556']
+
   # - job_name: "node_metrics"
   #   honor_labels: true # don't overwrite job & instance labels
   #   static_configs:

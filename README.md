@@ -9,7 +9,7 @@ git clone https://github.com/difli/cdc-for-twitter-sentimentr-up.git
 ```
 - cd into folder
 ```
-cd cdc-for-twitter-sentimentr-up
+cd cdc-to-kafka-for-twitter-sentimentr-up
 ```
 - delete all containers in case they exist
 ```
@@ -45,8 +45,28 @@ sh init-2.sh
 ![alt text](/images/kafka-console-consumer.png)
 
 ## Monitoring
-- grafana and prometheus is preconfigured with some pulsar dashboards
+- grafana and prometheus is preconfigured with some pulsar and kafka dashboards
 - open [localhost:3000](localhost:3000) in your browser
 - login with admin/admin
 - enjoy the preconfigured pulsar dashboards
+
+## Demo path
+- datapipeline: ```twitter.tweet_by_id``` cassandra table -> DataStax Change Agent for Apache Cassandra -> ```public/default/event-twitter.tweet_by_id``` pulsar topic -> DataStax Cassandra Source Connector for Apache Pulsar -> ```public/default/data-twitter.tweet_by_id``` pulsar topic -> kafka sink connector for pulsar -> ```from-pulsar``` kafka topic
+- query twitter.tweet_by_id table
+```
+docker exec -it cassandra cqlsh -e "select * from twitter.tweet_by_id"
+```
+or
+```
+docker exec -it cassandra cqlsh -e "select count(*) from twitter.tweet_by_id"
+```
+- show metrics for CDC pulsar topics 'public/default/event-twitter.tweet_by_id' and 'public/default/data-twitter.tweet_by_id' via grafana pulsar topic dashboard
 ![alt text](/images/grafana-topics.png)
+- show metrics for kafka topic 'from pulsar'
+![alt text](/images/from-pulsar-topic-kafka.png)
+- see the terminal where you executed "sh init-2.sh". The output is from command
+```
+docker exec -it kafka /bin/kafka-console-consumer --topic from-pulsar --bootstrap-server localhost:9092
+```
+There you see all mutations of table tweet_by_id. These mutations are streamed as events/messages to topic:' public/default/data-twitter.tweet_by_id'. The kafka connector consumes this topic and streams the data to the topic 'from-pulsar' in kafka which is consumed by the kafka-console-consumer cli. 
+![alt text](/images/kafka-console-consumer.png)

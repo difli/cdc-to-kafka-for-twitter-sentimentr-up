@@ -56,8 +56,25 @@ services:
       - ./grafana/config.ini:/etc/grafana/config.ini
       - ./grafana/provisioning:/etc/grafana/provisioning
       - ./grafana/provisioning/dashboards:/etc/grafana/provisioning/dashboards
+    environment:
+      GF_SECURITY_ADMIN_USER: admin
+      GF_SECURITY_ADMIN_PASSWORD: admin
     depends_on:
       - prometheus
+    networks:
+      - backend
+
+  jmx-kafka:
+    image: "sscaling/jmx-prometheus-exporter"
+    ports:
+     - "5556:5556"
+    environment:
+     CONFIG_YML : "/etc/jmx_exporter/config.yml"
+    volumes:
+     - ./jmx-exporter/kafka-config.yaml:/etc/jmx_exporter/config.yml
+    container_name: jmx-kafka
+    depends_on:
+     - kafka
     networks:
       - backend
 
@@ -86,6 +103,7 @@ services:
       KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT
       KAFKA_INTER_BROKER_LISTENER_NAME: PLAINTEXT
       KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+      KAFKA_JMX_PORT: 9991
     networks:
       - backend
 
