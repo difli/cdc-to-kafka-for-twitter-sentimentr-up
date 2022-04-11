@@ -70,7 +70,7 @@ docker exec -it kafka /bin/kafka-console-consumer --topic from-pulsar --bootstra
 ```
 - There you see all mutations of table tweet_by_id. These mutations are streamed as events/messages to topic:' public/default/data-twitter.tweet_by_id'. The kafka connector consumes this topic and streams the data to the topic 'from-pulsar' in kafka which is consumed by the kafka-console-consumer cli.
 ![alt text](/images/kafka-console-consumer.png)
-## Demo path with data ingestes via cqlsh  
+## Demo path with data ingests via cqlsh  
 - stop the applications in order to show the effect of inserts, updates and deletes via cqlsh
 ```
 docker-compose -f docker-compose-2.yml down
@@ -87,9 +87,10 @@ docker exec -it cassandra cqlsh -e "UPDATE twitter.tweet_by_id SET tweet='UPDATE
 ```
 docker exec -it cassandra cqlsh -e "DELETE tweet FROM twitter.tweet_by_id WHERE id='5b6962dd-3f90-4c93-8f61-eabfa4a803e2';"
 ```
-- the following screenshot shows two terminal windows. The one at the top is the one where 'sh init-2.sh' was executed and where 'kafka-console-consumer' prints all data streamed to kafka"s 'from-pulsar' topic. In case you stopped the output in this window - just execute the following command in any terminal you like.
+- the following screenshot shows two terminal windows.
+- the terminal at the bottom is where the cqlsh insert, update and delete commands where executed to cause mutations in the cassandra twitter.tweet_by_id table.
+- The terminal at the top is the one where 'sh init-2.sh' was executed and where 'kafka-console-consumer' prints all data streamed to kafka"s 'from-pulsar' topic. In case you stopped the output in this window - just execute the following command in any terminal you like.
 ```
 docker exec -it kafka /bin/kafka-console-consumer --topic from-pulsar --bootstrap-server localhost:9092
 ```
- - The terminal at the bottom is where the cqlsh insert, update and delete commands where executed to cause mutations in the cassandra twitter.tweet_by_id table. after each command the kafka-console-consumer in the top window prints the mutation streamed to kafka"s 'from-pulsar" topic in near realtime.
 ![alt text](/images/manual-cqlsh.png)
