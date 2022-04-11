@@ -68,5 +68,23 @@ docker exec -it cassandra cqlsh -e "select count(*) from twitter.tweet_by_id"
 ```
 docker exec -it kafka /bin/kafka-console-consumer --topic from-pulsar --bootstrap-server localhost:9092
 ```
-- There you see all mutations of table tweet_by_id. These mutations are streamed as events/messages to topic:' public/default/data-twitter.tweet_by_id'. The kafka connector consumes this topic and streams the data to the topic 'from-pulsar' in kafka which is consumed by the kafka-console-consumer cli. 
+- There you see all mutations of table tweet_by_id. These mutations are streamed as events/messages to topic:' public/default/data-twitter.tweet_by_id'. The kafka connector consumes this topic and streams the data to the topic 'from-pulsar' in kafka which is consumed by the kafka-console-consumer cli.
 ![alt text](/images/kafka-console-consumer.png)
+- stop the applications
+```
+docker-compose -f docker-compose-2.yml down
+```
+- ingest a record into 'twitter.tweet_by_id' table via cqlsh
+```
+docker exec -it cassandra cqlsh -e "INSERT INTO twitter.tweet_by_id (id, createdat, lang, sentiment, tweet) VALUES ('5b6962dd-3f90-4c93-8f61-eabfa4a803e2', '2022-04-11T13:58:26.132432', 'en', 3, 'Hello from DataStax CDC');"
+```
+- update an record in 'twitter.tweet_by_id' table via cqlsh
+```
+docker exec -it cassandra cqlsh -e "UPDATE twitter.tweet_by_id SET tweet='UPDATED Hello from DataStax CDC' WHERE id='5b6962dd-3f90-4c93-8f61-eabfa4a803e2';"
+```
+- delete columns from a record in 'twitter.tweet_by_id' table via cqlsh
+```
+docker exec -it cassandra cqlsh -e "DELETE tweet FROM twitter.tweet_by_id WHERE id='5b6962dd-3f90-4c93-8f61-eabfa4a803e2';"
+```
+- this screenshot shows two terminal windows. The one at the top is the one where 'sh init-2.sh' was executed and where 'kafka-console-consumer' prints all data streamed to 'from-pulsar' topic. The terminal at the bottom is where the cqlsh insert, update and delete commands where executed to cause mutations in the cassandra twitter.tweet_by_id table. after each command the kafka-console-consumer in the top window prints the mutation streamed to kafka in near realtime. 
+![alt text](/images/manual-cqlsh.png)
