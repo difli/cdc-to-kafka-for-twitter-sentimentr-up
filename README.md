@@ -60,7 +60,7 @@ sh init-2.sh
 ```
 docker exec -it cassandra cqlsh -e "select * from twitter.tweet_by_id"
 ```
-or
+- hit a few times the following command to see that the number of records in the twitter.tweet_by_id table is growing
 ```
 docker exec -it cassandra cqlsh -e "select count(*) from twitter.tweet_by_id"
 ```
