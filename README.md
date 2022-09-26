@@ -5,7 +5,7 @@ This repo contains a CDC demo. The twitter-sentimentr application ingests data i
 
 - clone the repo
 ```
-git clone https://github.com/difli/cdc-for-twitter-sentimentr-up.git
+git clone https://github.com/difli/cdc-to-kafka-for-twitter-sentimentr-up.git
 ```
 - cd into folder
 ```
