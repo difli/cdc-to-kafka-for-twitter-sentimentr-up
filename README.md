@@ -52,7 +52,11 @@ sh init-2.sh
 
 ## Demo path with data ingests by the application
 - datapipeline: ```twitter.tweet_by_id``` cassandra table -> DataStax Change Agent for Apache Cassandra -> ```public/default/event-twitter.tweet_by_id``` pulsar topic -> DataStax Cassandra Source Connector for Apache Pulsar -> ```public/default/data-twitter.tweet_by_id``` pulsar topic -> kafka sink connector for pulsar -> ```from-pulsar``` kafka topic
-- query twitter.tweet_by_id table
+- the following commands are scripted in ./demo.sh. Either execute ./demo.sh and hit enter to execute the next command.
+```
+./demo.sh
+```
+- or execute each command manually starting with the command to query twitter.tweet_by_id table
 ```
 docker exec -it cassandra cqlsh -e "select * from twitter.tweet_by_id"
 ```
